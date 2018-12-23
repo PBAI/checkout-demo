@@ -10,26 +10,21 @@ public class ApplicationGatewayTest {
 
     @Test
     public void shouldAddItemsToInventory(){
-        ApplicationGateway gateway = new ApplicationGateway();
-        ArrayList<Item> items = createItemsToAdd();
-        gateway.addItemsToInventory(items);
-
-        List<Item> inventory = gateway.getInventory();
-
-        int expectedNumberOfItems = 2;
-        assertThat(inventory.size(), is(expectedNumberOfItems));
-        for(int i = 0; i < inventory.size(); i++){
-            assertThat(inventory.get(i), is(items.get(i)));
-        }
-    }
-
-    private ArrayList<Item> createItemsToAdd() {
         Item item1 = new Item();
         Item item2 = new Item();
         ArrayList<Item> items = new ArrayList();
         items.add(item1);
         items.add(item2);
-        return items;
+        ArrayList<Item> itemsToAdd = items;
+        ApplicationGateway gateway = new ApplicationGateway();
+
+        gateway.addItemsToInventory(itemsToAdd);
+
+        List<Item> inventory = gateway.getInventory();
+        assertThat(inventory.size(), is(itemsToAdd.size()));
+        for(int i = 0; i < inventory.size(); i++){
+            assertThat(inventory.get(i), is(itemsToAdd.get(i)));
+        }
     }
 
 }
