@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -6,10 +7,12 @@ public class ApplicationGateway {
 
     private List<String> inventory;
     private Cart cart;
+    private BigDecimal total;
 
     public ApplicationGateway() {
         this.inventory = new ArrayList<>();
         this.cart = new Cart();
+        this.total = new BigDecimal("0.00");
     }
 
     public void addItemsToInventory(List<String> itemsToAdd){
@@ -22,6 +25,14 @@ public class ApplicationGateway {
                 this.cart.addItem(itemToAdd);
             }
         }
+    }
+
+    public void scanItemToTotal(Item itemToScan){
+
+    }
+
+    public BigDecimal getTotal(){
+        return this.total;
     }
 
     public Map<String, List<Item>> getDistinctItemsInCart(){

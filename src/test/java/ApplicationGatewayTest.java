@@ -3,9 +3,11 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class ApplicationGatewayTest {
 
@@ -41,6 +43,29 @@ public class ApplicationGatewayTest {
 
         gateway.addItemToCart(itemWithinInventory);
         assertThat(gateway.getDistinctItemsInCart().size(), is(1));
+    }
+
+    @Test
+    public void scanningItemUpdatesTotal(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        BigDecimal expectedInitialTotal = new BigDecimal("0.00");
+        assertThat(gateway.getTotal(), is(expectedInitialTotal));
+
+        ArrayList itemNamesForInventory = new ArrayList();
+        Item banana = new Item("banana", new BigDecimal(".99"));
+        Item apple = new Item("apple", new BigDecimal(".50"));
+        itemNamesForInventory.add(banana.getName());
+        itemNamesForInventory.add(apple.getName());
+        gateway.addItemsToInventory(itemNamesForInventory);
+        gateway.addItemToCart(banana);
+        gateway.addItemToCart(apple);
+
+        Map<String, List<Item>> distinctItemsInCart = gateway.getDistinctItemsInCart();
+        gateway.scanItemToTotal(distinctItemsInCart.get(banana.getName()).get(0));
+        gateway.scanItemToTotal(distinctItemsInCart.get(apple.getName()).get(0));
+
+        BigDecimal expectedTotal = new BigDecimal("1.49");
+        assertEquals(expectedTotal, gateway.getTotal());
     }
 
 }
