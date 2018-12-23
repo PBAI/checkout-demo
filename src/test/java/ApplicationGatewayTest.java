@@ -28,4 +28,20 @@ public class ApplicationGatewayTest {
         }
     }
 
+    @Test
+    public void shouldOnlyAddItemToCartIfFoundWithinInventory(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        Item itemWithinInventory = new Item("soap", new BigDecimal(".99"));
+        ArrayList itemsToAdd = new ArrayList();
+        itemsToAdd.add(itemWithinInventory);
+        gateway.addItemsToInventory(itemsToAdd);
+
+        Item itemNotFoundWithinInventory = new Item("lotion", new BigDecimal("3.25"));
+        gateway.addItemToCart(itemNotFoundWithinInventory);
+        assertThat(gateway.getDistinctItemsInCart().size(), is(0));
+
+        gateway.addItemToCart(itemWithinInventory);
+        assertThat(gateway.getDistinctItemsInCart().size(), is(1));
+    }
+
 }
