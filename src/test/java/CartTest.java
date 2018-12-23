@@ -6,24 +6,25 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertSame;
 
 public class CartTest {
 
     @Test
     public void shouldAddItemToCart(){
         Cart cart = new Cart();
-        assertThat(cart.getItems().size(), is(0));
+        assertThat(cart.getItemsInCart().size(), is(0));
 
         Item bread = new Item("bread", new BigDecimal("1.50"));
         cart.addItem(bread);
-        Map<String, List<Item>> items = cart.getItems();
+        Map<String, List<Item>> items = cart.getItemsInCart();
         assertThat(items.size(), is(1));
-        assertThat(items.get(0), is(bread));
+        assertSame(items.get(bread.getName()).get(0), bread);
 
         Item cheese = new Item("cheese", new BigDecimal("3.25"));
         cart.addItem(cheese);
         assertThat(items.size(), is(2));
-        assertThat(items.get(1), is(cheese));
+        assertThat(items.get(cheese.getName()).get(0), is(cheese));
     }
 
 }
