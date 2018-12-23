@@ -5,9 +5,11 @@ import java.util.Map;
 public class ApplicationGateway {
 
     private List<Item> inventory;
+    private Cart cart;
 
-    public ApplicationGateway(){
+    public ApplicationGateway() {
         this.inventory = new ArrayList<>();
+        this.cart = new Cart();
     }
 
     public void addItemsToInventory(List<Item> itemsToAdd){
@@ -15,11 +17,15 @@ public class ApplicationGateway {
     }
 
     public void addItemToCart(Item itemToAdd){
-
+        for(int i = 0; i < inventory.size(); i++){
+            if(inventory.get(i).getName().equals(itemToAdd.getName())){
+                this.cart.addItem(itemToAdd);
+            }
+        }
     }
 
     public Map<String, List<Item>> getDistinctItemsInCart(){
-        return null;
+        return this.cart.getItemsInCart();
     }
 
     public List<Item> getInventory(){
