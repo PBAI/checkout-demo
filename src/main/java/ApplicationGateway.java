@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class ApplicationGateway {
 
-    private List<Item> inventory;
+    private List<String> inventory;
     private Cart cart;
 
     public ApplicationGateway() {
@@ -12,13 +12,13 @@ public class ApplicationGateway {
         this.cart = new Cart();
     }
 
-    public void addItemsToInventory(List<Item> itemsToAdd){
+    public void addItemsToInventory(List<String> itemsToAdd){
         this.inventory.addAll(itemsToAdd);
     }
 
     public void addItemToCart(Item itemToAdd){
         for(int i = 0; i < inventory.size(); i++){
-            if(inventory.get(i).getName().equals(itemToAdd.getName())){
+            if(inventory.get(i).equals(itemToAdd.getName())){
                 this.cart.addItem(itemToAdd);
             }
         }
@@ -28,7 +28,7 @@ public class ApplicationGateway {
         return this.cart.getItemsInCart();
     }
 
-    public List<Item> getInventory(){
+    public List<String> getInventory(){
         return this.inventory;
     }
 
