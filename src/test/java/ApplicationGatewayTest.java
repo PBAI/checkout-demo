@@ -10,8 +10,8 @@ public class ApplicationGatewayTest {
 
     @Test
     public void shouldAddItemsToInventory(){
-        Item item1 = new Item();
-        Item item2 = new Item();
+        Item item1 = new Item(null, null);
+        Item item2 = new Item(null, null);
         ArrayList<Item> items = new ArrayList();
         items.add(item1);
         items.add(item2);
