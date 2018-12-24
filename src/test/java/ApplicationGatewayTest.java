@@ -20,7 +20,7 @@ public class ApplicationGatewayTest {
         itemNames.add(item2.getName());
         ApplicationGateway gateway = new ApplicationGateway();
 
-        gateway.addItemsToInventory(itemNames);
+        gateway.addItemNamesToInventory(itemNames);
 
         List<String> inventory = gateway.getInventory();
         assertThat(inventory.size(), is(itemNames.size()));
@@ -35,7 +35,7 @@ public class ApplicationGatewayTest {
         Item itemWithinInventory = new Item("soap", new BigDecimal(".99"));
         ArrayList itemsToAdd = new ArrayList();
         itemsToAdd.add(itemWithinInventory.getName());
-        gateway.addItemsToInventory(itemsToAdd);
+        gateway.addItemNamesToInventory(itemsToAdd);
 
         Item itemNotFoundWithinInventory = new Item("lotion", new BigDecimal("3.25"));
         gateway.addItemToCart(itemNotFoundWithinInventory);
@@ -46,23 +46,24 @@ public class ApplicationGatewayTest {
     }
 
     @Test
-    public void scanningItemUpdatesTotal(){
+    public void scanningItemUpdatesTotal_OnlyIfItemWithinCart(){
         ApplicationGateway gateway = new ApplicationGateway();
         BigDecimal expectedInitialTotal = new BigDecimal("0.00");
         assertThat(gateway.getTotal(), is(expectedInitialTotal));
 
-        ArrayList itemNamesForInventory = new ArrayList();
         Item banana = new Item("banana", new BigDecimal(".99"));
         Item apple = new Item("apple", new BigDecimal(".50"));
+        ArrayList itemNamesForInventory = new ArrayList();
         itemNamesForInventory.add(banana.getName());
         itemNamesForInventory.add(apple.getName());
-        gateway.addItemsToInventory(itemNamesForInventory);
+        gateway.addItemNamesToInventory(itemNamesForInventory);
         gateway.addItemToCart(banana);
         gateway.addItemToCart(apple);
 
-        Map<String, List<Item>> distinctItemsInCart = gateway.getDistinctItemsInCart();
-        gateway.scanItemToTotal(distinctItemsInCart.get(banana.getName()).get(0));
-        gateway.scanItemToTotal(distinctItemsInCart.get(apple.getName()).get(0));
+        gateway.scanItemToTotal(banana);
+        gateway.scanItemToTotal(apple);
+        Item itemNotInCart = new Item("shoes", new BigDecimal("10.59"));
+        gateway.scanItemToTotal(itemNotInCart);
 
         BigDecimal expectedTotal = new BigDecimal("1.49");
         assertEquals(expectedTotal, gateway.getTotal());

@@ -15,7 +15,7 @@ public class ApplicationGateway {
         this.total = new BigDecimal("0.00");
     }
 
-    public void addItemsToInventory(List<String> itemsToAdd){
+    public void addItemNamesToInventory(List<String> itemsToAdd){
         this.inventory.addAll(itemsToAdd);
     }
 
@@ -28,7 +28,12 @@ public class ApplicationGateway {
     }
 
     public void scanItemToTotal(Item itemToScan){
-
+        Map<String, List<Item>> itemsInCart = this.cart.getItemsInCart();
+        for(String itemName : itemsInCart.keySet()){
+            if(itemName.equals(itemToScan.getName())){
+                this.total = this.total.add(itemToScan.getRegularPrice());
+            }
+        }
     }
 
     public BigDecimal getTotal(){
