@@ -12,31 +12,27 @@ public class ApplicationGatewayTest {
 
     @Test
     public void shouldAddItemsToInventory() {
-        Item item1 = new Item(null, null);
-        Item item2 = new Item(null, null);
-        ArrayList<String> itemNames = new ArrayList();
-        itemNames.add(item1.getName());
-        itemNames.add(item2.getName());
+        String itemOneName = "thingOne";
+        String itemTwoName = "thingTwo";
         ApplicationGateway gateway = new ApplicationGateway();
 
-        gateway.addItemNamesToInventory(itemNames);
+        gateway.addItemNamesToInventory(itemOneName, itemTwoName);
 
         List<String> inventory = gateway.getInventory();
-        assertThat(inventory.size(), is(itemNames.size()));
-        for(int i = 0; i < inventory.size(); i++){
-            assertThat(inventory.get(i), is(itemNames.get(i)));
-        }
+
+        int expectedNumberOfNames = 2;
+        assertThat(inventory.size(), is(expectedNumberOfNames));
+        assertThat(inventory.get(0), is(itemOneName));
+        assertThat(inventory.get(1), is(itemTwoName));
     }
 
     @Test
     public void shouldOnlyAddItemToCartIfFoundWithinInventory() {
         ApplicationGateway gateway = new ApplicationGateway();
-        Item itemWithinInventory = new Item("soap", new BigDecimal(".99"));
-        ArrayList itemsToAdd = new ArrayList();
-        itemsToAdd.add(itemWithinInventory.getName());
-        gateway.addItemNamesToInventory(itemsToAdd);
+        SalesUnit itemWithinInventory = new Item("soap", new BigDecimal(".99"));
+        gateway.addItemNamesToInventory(itemWithinInventory.getName());
 
-        Item itemNotFoundWithinInventory = new Item("lotion", new BigDecimal("3.25"));
+        SalesUnit itemNotFoundWithinInventory = new Item("lotion", new BigDecimal("3.25"));
         gateway.addItemToCart(itemNotFoundWithinInventory);
         assertThat(gateway.getDistinctItemsInCart().size(), is(0));
 
@@ -50,18 +46,22 @@ public class ApplicationGatewayTest {
         BigDecimal expectedInitialTotal = new BigDecimal("0.00");
         assertThat(gateway.getTotal(), is(expectedInitialTotal));
 
-        SalesUnit banana = new Item("banana", new BigDecimal(".99"));
-        SalesUnit apple = new Item("apple", new BigDecimal(".50"));
+        BigDecimal bananaPrice = new BigDecimal(".99");
+        BigDecimal applePrice = new BigDecimal(".50");
+        BigDecimal grapesPricePerPound = new BigDecimal("2.00");
+        BigDecimal grapesWeightInPounds = new BigDecimal("2.00");
+
+        SalesUnit banana = new Item("banana", bananaPrice);
+        SalesUnit apple = new Item("apple", applePrice);
         SalesUnit grapes = new WeightedItem(
                 "grapes",
-                new BigDecimal("2.00"),
-                new BigDecimal("2.00")
-        );
-        ArrayList itemNamesForInventory = new ArrayList();
-        itemNamesForInventory.add(banana.getName());
-        itemNamesForInventory.add(apple.getName());
-        itemNamesForInventory.add(grapes.getName());
-        gateway.addItemNamesToInventory(itemNamesForInventory);
+                grapesPricePerPound,
+                grapesWeightInPounds);
+
+        gateway.addItemNamesToInventory(
+                banana.getName(),
+                apple.getName(),
+                grapes.getName());
 
         gateway.addItemToCart(banana);
         gateway.addItemToCart(apple);
@@ -70,7 +70,7 @@ public class ApplicationGatewayTest {
         gateway.scanItemToTotal(banana);
         gateway.scanItemToTotal(apple);
         gateway.scanItemToTotal(grapes);
-        Item itemNotInCart = new Item("shoes", new BigDecimal("10.59"));
+        SalesUnit itemNotInCart = new Item("shoes", new BigDecimal("10.59"));
         gateway.scanItemToTotal(itemNotInCart);
 
         BigDecimal expectedTotal = new BigDecimal("5.49");

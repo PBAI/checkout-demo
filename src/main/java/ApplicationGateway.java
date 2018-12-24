@@ -15,8 +15,10 @@ public class ApplicationGateway {
         this.total = new BigDecimal("0.00");
     }
 
-    public void addItemNamesToInventory(List<String> itemsToAdd){
-        this.inventory.addAll(itemsToAdd);
+    public void addItemNamesToInventory(String...itemNames){
+        for(String itemName : itemNames){
+            this.inventory.add(itemName);
+        }
     }
 
     public void addItemToCart(SalesUnit itemToAdd){
