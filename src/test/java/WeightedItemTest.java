@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 import java.math.BigDecimal;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -20,11 +21,13 @@ public class WeightedItemTest {
 
     @Test
     public void shouldGetPriceAccordingToWeightInPounds(){
-        BigDecimal expectedPricePerPound = new BigDecimal("2.50", GlobalConstants.TWO_DECIMAL_PLACES);
-        BigDecimal expectedWeightInPounds = new BigDecimal("3.00", GlobalConstants.TWO_DECIMAL_PLACES);
+        BigDecimal expectedPricePerPound = new BigDecimal("2.50");
+        BigDecimal expectedWeightInPounds = new BigDecimal("3.00");
         WeightedItem apples = new WeightedItem("apples", expectedPricePerPound, expectedWeightInPounds);
 
-        assertThat(apples.getPrice(), is(expectedPricePerPound.multiply(expectedWeightInPounds)));
+        int twoDecimalPlacePrecision = 2;
+        BigDecimal expectedPrice = new BigDecimal("7.50").setScale(twoDecimalPlacePrecision);
+        assertThat(apples.getPrice(), is(expectedPrice));
     }
 
 }

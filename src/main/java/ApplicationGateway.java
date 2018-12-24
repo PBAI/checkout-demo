@@ -19,7 +19,7 @@ public class ApplicationGateway {
         this.inventory.addAll(itemsToAdd);
     }
 
-    public void addItemToCart(Item itemToAdd){
+    public void addItemToCart(SalesUnit itemToAdd){
         for(int i = 0; i < inventory.size(); i++){
             if(inventory.get(i).equals(itemToAdd.getName())){
                 this.cart.addItem(itemToAdd);
@@ -27,8 +27,8 @@ public class ApplicationGateway {
         }
     }
 
-    public void scanItemToTotal(Item itemToScan){
-        Map<String, List<Item>> itemsInCart = this.cart.getItemsInCart();
+    public void scanItemToTotal(SalesUnit itemToScan){
+        Map<String, List<SalesUnit>> itemsInCart = this.cart.getItemsInCart();
         for(String itemName : itemsInCart.keySet()){
             if(itemName.equals(itemToScan.getName())){
                 this.total = this.total.add(itemToScan.getPrice());
@@ -40,7 +40,7 @@ public class ApplicationGateway {
         return this.total;
     }
 
-    public Map<String, List<Item>> getDistinctItemsInCart(){
+    public Map<String, List<SalesUnit>> getDistinctItemsInCart(){
         return this.cart.getItemsInCart();
     }
 

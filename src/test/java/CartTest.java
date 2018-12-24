@@ -15,13 +15,13 @@ public class CartTest {
         Cart cart = new Cart();
         assertThat(cart.getItemsInCart().size(), is(0));
 
-        Item bread = new Item("bread", new BigDecimal("1.50"));
+        SalesUnit bread = new Item("bread", new BigDecimal("1.50"));
         cart.addItem(bread);
-        Map<String, List<Item>> items = cart.getItemsInCart();
+        Map<String, List<SalesUnit>> items = cart.getItemsInCart();
         assertThat(items.size(), is(1));
         assertSame(items.get(bread.getName()).get(0), bread);
 
-        Item cheese = new Item("cheese", new BigDecimal("3.25"));
+        SalesUnit cheese = new Item("cheese", new BigDecimal("3.25"));
         cart.addItem(cheese);
         assertThat(items.size(), is(2));
         assertThat(items.get(cheese.getName()).get(0), is(cheese));

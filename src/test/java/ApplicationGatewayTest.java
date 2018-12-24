@@ -50,21 +50,30 @@ public class ApplicationGatewayTest {
         BigDecimal expectedInitialTotal = new BigDecimal("0.00");
         assertThat(gateway.getTotal(), is(expectedInitialTotal));
 
-        Item banana = new Item("banana", new BigDecimal(".99"));
-        Item apple = new Item("apple", new BigDecimal(".50"));
+        SalesUnit banana = new Item("banana", new BigDecimal(".99"));
+        SalesUnit apple = new Item("apple", new BigDecimal(".50"));
+        SalesUnit grapes = new WeightedItem(
+                "grapes",
+                new BigDecimal("2.00"),
+                new BigDecimal("2.00")
+        );
         ArrayList itemNamesForInventory = new ArrayList();
         itemNamesForInventory.add(banana.getName());
         itemNamesForInventory.add(apple.getName());
+        itemNamesForInventory.add(grapes.getName());
         gateway.addItemNamesToInventory(itemNamesForInventory);
+
         gateway.addItemToCart(banana);
         gateway.addItemToCart(apple);
+        gateway.addItemToCart(grapes);
 
         gateway.scanItemToTotal(banana);
         gateway.scanItemToTotal(apple);
+        gateway.scanItemToTotal(grapes);
         Item itemNotInCart = new Item("shoes", new BigDecimal("10.59"));
         gateway.scanItemToTotal(itemNotInCart);
 
-        BigDecimal expectedTotal = new BigDecimal("1.49");
+        BigDecimal expectedTotal = new BigDecimal("5.49");
         assertEquals(expectedTotal, gateway.getTotal());
     }
 
