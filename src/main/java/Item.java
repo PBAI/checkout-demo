@@ -1,21 +1,23 @@
 import java.math.BigDecimal;
 
-public class Item {
+public class Item implements SalesUnit{
 
     private String name;
-    private BigDecimal regularPrice;
+    private BigDecimal basePrice;
 
-    public Item(String name, BigDecimal regularPrice){
+    public Item(String name, BigDecimal basePrice){
         this.name = name;
-        this.regularPrice = regularPrice;
+        this.basePrice = basePrice;
     }
 
+    @Override
     public String getName(){
         return this.name;
     }
 
-    public BigDecimal getRegularPrice(){
-        return this.regularPrice;
+    @Override
+    public BigDecimal getPrice(){
+        return this.basePrice;
     }
 
 }

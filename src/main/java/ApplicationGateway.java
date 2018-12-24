@@ -31,7 +31,7 @@ public class ApplicationGateway {
         Map<String, List<Item>> itemsInCart = this.cart.getItemsInCart();
         for(String itemName : itemsInCart.keySet()){
             if(itemName.equals(itemToScan.getName())){
-                this.total = this.total.add(itemToScan.getRegularPrice());
+                this.total = this.total.add(itemToScan.getPrice());
             }
         }
     }

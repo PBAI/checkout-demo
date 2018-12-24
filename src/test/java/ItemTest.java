@@ -8,12 +8,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ItemTest {
 
     @Test
-    public void shouldSetItemNameAndRegularPriceOnInstantiation(){
+    public void shouldSetItemNameAndBasePriceOnInstantiation(){
         String expectedName = "milk";
-        BigDecimal expectedRegularPrice = new BigDecimal("2.00");
-        Item milk = new Item(expectedName, expectedRegularPrice);
+        BigDecimal expectedBasePrice = new BigDecimal("2.00");
+        Item milk = new Item(expectedName, expectedBasePrice);
         assertThat(milk.getName(), is(expectedName));
-        assertThat(milk.getRegularPrice(), is(expectedRegularPrice));
+        assertThat(milk.getPrice(), is(expectedBasePrice));
     }
 
 }
