@@ -1,7 +1,6 @@
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -11,11 +10,10 @@ import static org.junit.Assert.assertEquals;
 public class ApplicationGatewayTest {
 
     @Test
-    public void shouldAddItemsToInventory() {
+    public void shouldAddItemNamesToInventory() {
         String itemOneName = "thingOne";
         String itemTwoName = "thingTwo";
         ApplicationGateway gateway = new ApplicationGateway();
-
         gateway.addItemNamesToInventory(itemOneName, itemTwoName);
 
         List<String> inventory = gateway.getInventory();
@@ -70,6 +68,7 @@ public class ApplicationGatewayTest {
         gateway.scanItemToTotal(banana);
         gateway.scanItemToTotal(apple);
         gateway.scanItemToTotal(grapes);
+
         SalesUnit itemNotInCart = new Item("shoes", new BigDecimal("10.59"));
         gateway.scanItemToTotal(itemNotInCart);
 
