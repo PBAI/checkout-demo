@@ -76,4 +76,17 @@ public class ApplicationGatewayTest {
         assertEquals(expectedTotal, gateway.getTotal());
     }
 
+    @Test
+    public void shouldMarkdownItemByPercentage(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        Item markedDownItem = new Item("something", new BigDecimal("52.00"));
+        gateway.addItemNamesToInventory(markedDownItem.getName());
+        gateway.markdownItemByPercentage(markedDownItem.getName(), Percentage.TEN_PERCENT);
+        gateway.addItemToCart(markedDownItem);
+        gateway.scanItemToTotal(markedDownItem);
+
+        BigDecimal expectedTotal = new BigDecimal("46.80");
+        assertEquals(expectedTotal, gateway.getTotal());
+    }
+
 }

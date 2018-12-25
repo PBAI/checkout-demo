@@ -21,6 +21,10 @@ public class ApplicationGateway {
         }
     }
 
+    public void markdownItemByPercentage(String itemName, Percentage markdownPercentage){
+
+    }
+
     public void addItemToCart(SalesUnit itemToAdd){
         for(int i = 0; i < inventory.size(); i++){
             if(inventory.get(i).equals(itemToAdd.getName())){
