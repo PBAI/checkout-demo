@@ -21,7 +21,7 @@ public class ApplicationGateway {
         }
     }
 
-    public void markdownItemByPercentage(String itemName, Percentage markdownPercentage){
+    public void markdownItemByPercentage(String itemName, String markdownPercentage){
 
     }
 

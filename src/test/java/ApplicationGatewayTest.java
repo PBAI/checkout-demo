@@ -81,7 +81,7 @@ public class ApplicationGatewayTest {
         ApplicationGateway gateway = new ApplicationGateway();
         Item markedDownItem = new Item("something", new BigDecimal("52.00"));
         gateway.addItemNamesToInventory(markedDownItem.getName());
-        gateway.markdownItemByPercentage(markedDownItem.getName(), Percentage.TEN_PERCENT);
+        gateway.markdownItemByPercentage(markedDownItem.getName(), Percentage.TEN_PERCENT.getPercentageValueString());
         gateway.addItemToCart(markedDownItem);
         gateway.scanItemToTotal(markedDownItem);
 
