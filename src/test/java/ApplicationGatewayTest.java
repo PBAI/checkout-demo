@@ -79,14 +79,40 @@ public class ApplicationGatewayTest {
     @Test
     public void shouldMarkdownItemByPercentage(){
         ApplicationGateway gateway = new ApplicationGateway();
-        Item markedDownItem = new Item("something", new BigDecimal("52.00"));
-        gateway.addItemNamesToInventory(markedDownItem.getName());
-        gateway.markdownItemByPercentage(markedDownItem.getName(), Percentage.TEN_PERCENT.getPercentageValueString());
+        BigDecimal basePrice = new BigDecimal("52.00");
+        String itemName = "something";
+        Item markedDownItem = new Item(itemName, basePrice);
+
+        gateway.addItemNamesToInventory(itemName);
+        String markdownPercentage = Percentage.TWENTY_FIVE_PERCENT.getPercentageValueString();
+        gateway.markdownItemByPercentage(itemName, markdownPercentage);
         gateway.addItemToCart(markedDownItem);
         gateway.scanItemToTotal(markedDownItem);
 
-        BigDecimal expectedTotal = new BigDecimal("46.80");
-        assertEquals(expectedTotal, gateway.getTotal());
+        BigDecimal markedDownPrice = new BigDecimal("39.00");
+        assertEquals(markedDownPrice, gateway.getTotal());
     }
+
+    @Test
+    public void shouldAddMarkdownPriceToTotal(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        String item1Name = "thingOne";
+        BigDecimal item1BasePrice = new BigDecimal("20.00");
+        Item item1 = new Item(item1Name, item1BasePrice);
+        String item2Name = "cheaper";
+        BigDecimal item2BasePrice = new BigDecimal("10.00");
+        Item item2 = new Item(item2Name, item2BasePrice);
+
+        gateway.addItemNamesToInventory(item1Name, item2Name);
+        gateway.addItemToCart(item1);
+        gateway.addItemToCart(item2);
+        gateway.markdownItemByPercentage(item2Name, Percentage.FIFTY_PERCENT.getPercentageValueString());
+        gateway.scanItemToTotal(item1);
+        gateway.scanItemToTotal(item2);
+
+        BigDecimal expectedTotal = new BigDecimal("25.00");
+        assertThat(gateway.getTotal(), is(expectedTotal));
+    }
+
 
 }
