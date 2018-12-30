@@ -26,14 +26,14 @@ public class ApplicationGateway {
 
     public void markdownItemByPercentage(String itemName, String markdownPercentage){
         if((this.inventory.contains(itemName)) &&
-                (!this.markdowns.containsKey(itemName))){
+                (!itemIsMarkedDown(itemName))){
             this.markdowns.put(itemName, markdownPercentage);
         }
     }
 
     public void addItemToCart(SalesUnit itemToAdd){
         for(int i = 0; i < inventory.size(); i++){
-            if(inventory.get(i).equals(itemToAdd.getName())){
+            if(itemToScanIsInCart(itemToAdd, inventory.get(i))){
                 this.cart.addItem(itemToAdd);
             }
         }
@@ -42,21 +42,14 @@ public class ApplicationGateway {
     public void scanItemToTotal(SalesUnit itemToScan){
         Map<String, List<SalesUnit>> itemsInCart = this.cart.getItemsInCart();
         for(String itemName : itemsInCart.keySet()){
-            if(itemName.equals(itemToScan.getName())){
-                if(this.markdowns.containsKey(itemName)){
+            if(itemToScanIsInCart(itemToScan, itemName)){
+                if(itemIsMarkedDown(itemName)){
                     addMarkedDownPriceToTotal(itemToScan);
                 } else {
                     this.total = this.total.add(itemToScan.getPrice());
                 }
             }
         }
-    }
-
-    private void addMarkedDownPriceToTotal(SalesUnit itemToScan) {
-        BigDecimal basePrice = itemToScan.getPrice();
-        BigDecimal markedDownAmount = basePrice.multiply(new BigDecimal(this.markdowns.get(itemToScan.getName())));
-        int twoDecimalPlacePrecision = 2;
-        this.total = this.total.add(basePrice.subtract(markedDownAmount)).setScale(twoDecimalPlacePrecision);
     }
 
     public BigDecimal getTotal(){
@@ -69,6 +62,22 @@ public class ApplicationGateway {
 
     public List<String> getInventory(){
         return this.inventory;
+    }
+
+    private boolean itemIsMarkedDown(String itemName) {
+        return this.markdowns.containsKey(itemName);
+    }
+
+    private boolean itemToScanIsInCart(SalesUnit itemToScan, String itemInCartName) {
+        return itemInCartName.equals(itemToScan.getName());
+    }
+
+    private void addMarkedDownPriceToTotal(SalesUnit itemToScan) {
+        BigDecimal basePrice = itemToScan.getPrice();
+        BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdowns.get(itemToScan.getName()));
+        BigDecimal markedDownAmount = basePrice.multiply(markdownPercentAsBigDecimal);
+        int twoDecimalPlacePrecision = 2;
+        this.total = this.total.add(basePrice.subtract(markedDownAmount)).setScale(twoDecimalPlacePrecision);
     }
 
 }
