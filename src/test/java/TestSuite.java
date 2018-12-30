@@ -7,7 +7,8 @@ import org.junit.runners.Suite;
         ApplicationGatewayTest.class,
         CartTest.class,
         ItemTest.class,
-        WeightedItemTest.class
+        WeightedItemTest.class,
+        SpecialPriceAdjusterTest.class
 })
 
 public class TestSuite {

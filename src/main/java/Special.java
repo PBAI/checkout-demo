@@ -1,4 +1,4 @@
-public enum Specials {
+public enum Special {
 
     BUY_ONE_GET_ONE_FREE("2", "4", Percentage.FIFTY_PERCENT.getPercentageValueString());
 
@@ -6,7 +6,7 @@ public enum Specials {
     private String itemMinimum;
     private String percentOffRegPrice;
 
-    private Specials(String itemMinimum, String itemLimit, String percentOffRegPrice){
+    private Special(String itemMinimum, String itemLimit, String percentOffRegPrice){
         this.itemMinimum = itemMinimum;
         this.itemLimit = itemLimit;
         this.percentOffRegPrice = percentOffRegPrice;
