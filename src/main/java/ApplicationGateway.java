@@ -9,13 +9,13 @@ public class ApplicationGateway {
     private List<String> inventory;
     private Cart cart;
     private BigDecimal total;
-    private Map<String, String> markdowns;
+    private Map<String, String> markdownMap;
 
     public ApplicationGateway() {
         this.inventory = new ArrayList<>();
         this.cart = new Cart();
         this.total = new BigDecimal("0.00");
-        this.markdowns = new HashMap<>();
+        this.markdownMap = new HashMap<>();
     }
 
     public void addItemNamesToInventory(String...itemNames){
@@ -27,7 +27,7 @@ public class ApplicationGateway {
     public void markdownItemByPercentage(String itemName, String markdownPercentage){
         if((this.inventory.contains(itemName)) &&
                 (!itemIsMarkedDown(itemName))){
-            this.markdowns.put(itemName, markdownPercentage);
+            this.markdownMap.put(itemName, markdownPercentage);
         }
     }
 
@@ -65,7 +65,7 @@ public class ApplicationGateway {
     }
 
     private boolean itemIsMarkedDown(String itemName) {
-        return this.markdowns.containsKey(itemName);
+        return this.markdownMap.containsKey(itemName);
     }
 
     private boolean itemToScanIsInCart(SalesUnit itemToScan, String itemInCartName) {
@@ -74,7 +74,7 @@ public class ApplicationGateway {
 
     private void addMarkedDownPriceToTotal(SalesUnit itemToScan) {
         BigDecimal basePrice = itemToScan.getPrice();
-        BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdowns.get(itemToScan.getName()));
+        BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdownMap.get(itemToScan.getName()));
         BigDecimal markedDownAmount = basePrice.multiply(markdownPercentAsBigDecimal);
         int twoDecimalPlacePrecision = 2;
         this.total = this.total.add(basePrice.subtract(markedDownAmount)).setScale(twoDecimalPlacePrecision);
