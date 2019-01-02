@@ -1,26 +1,26 @@
 public enum Special {
 
-    BUY_ONE_GET_ONE_FREE("2", "4", Percentage.FIFTY_PERCENT.getPercentageValueString());
+    BUY_ONE_GET_ONE_FREE(2, 4, Percentage.FIFTY_PERCENT);
 
-    private String itemLimit;
-    private String itemMinimum;
-    private String percentOffRegPrice;
+    private int itemLimit;
+    private int itemMinimum;
+    private Percentage percentOffRegPrice;
 
-    private Special(String itemMinimum, String itemLimit, String percentOffRegPrice){
+    private Special(int itemMinimum, int itemLimit, Percentage percentOffRegPrice){
         this.itemMinimum = itemMinimum;
         this.itemLimit = itemLimit;
         this.percentOffRegPrice = percentOffRegPrice;
     }
 
-    public String getItemLimit(){
+    public int getItemLimit(){
         return this.itemLimit;
     }
 
-    public String getItemMinimum(){
+    public int getItemMinimum(){
         return this.itemMinimum;
     }
 
-    public String getPercentOffRegPrice(){
+    public Percentage getPercentOffRegPrice(){
         return this.percentOffRegPrice;
     }
 

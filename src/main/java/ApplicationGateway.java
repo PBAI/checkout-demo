@@ -10,12 +10,14 @@ public class ApplicationGateway {
     private Cart cart;
     private BigDecimal total;
     private Map<String, String> markdownMap;
+    private Map<String, Special> specialsMap;
 
     public ApplicationGateway() {
         this.inventory = new ArrayList<>();
         this.cart = new Cart();
         this.total = new BigDecimal("0.00");
         this.markdownMap = new HashMap<>();
+        this.specialsMap = new HashMap<>();
     }
 
     public void addItemNamesToInventory(String...itemNames){
@@ -28,6 +30,12 @@ public class ApplicationGateway {
         if((this.inventory.contains(itemName)) &&
                 (!itemIsMarkedDown(itemName))){
             this.markdownMap.put(itemName, markdownPercentage);
+        }
+    }
+
+    public void putItemOnSpecial(String itemName, Special specialForItem){
+        if(!itemIsMarkedDown(itemName)){
+            this.specialsMap.put(itemName, specialForItem);
         }
     }
 

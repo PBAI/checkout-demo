@@ -2,10 +2,12 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class ApplicationGatewayTest {
 
@@ -112,6 +114,25 @@ public class ApplicationGatewayTest {
 
         BigDecimal expectedTotal = new BigDecimal("25.00");
         assertThat(gateway.getTotal(), is(expectedTotal));
+    }
+
+    @Test
+    public void shouldPutInventoriedItemOnSpecialIfNotMarkdownOrAlreadyOnSpecial(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        BigDecimal basePrice = new BigDecimal("9.99");
+        Item thing = new Item("thing", basePrice);
+
+        gateway.addItemNamesToInventory(thing.getName());
+        gateway.putItemOnSpecial(thing.getName(), Special.BUY_ONE_GET_ONE_FREE);
+        gateway.addItemToCart(thing);
+        gateway.addItemToCart(thing);
+        Map<String, List<SalesUnit>> itemsInCart = gateway.getDistinctItemsInCart();
+        for(SalesUnit item : itemsInCart.get(thing.getName())){
+            gateway.scanItemToTotal(item);
+        }
+
+        BigDecimal expectedTotal = new BigDecimal("9.99");
+        assertEquals(expectedTotal, gateway.getTotal());
     }
 
 
