@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface SpecialPriceAdjuster {
 
-    public BigDecimal adjustPrice(String itemName, Map<String, List<SalesUnit>> itemsInCart);
+    public BigDecimal adjustPrice(SalesUnit item);
     public Map<String, Integer> getItemNamesAndTimesSpecialApplied();
 
 }

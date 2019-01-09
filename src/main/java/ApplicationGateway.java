@@ -53,11 +53,31 @@ public class ApplicationGateway {
         String itemName = itemToScan.getName();
         if(itemIsMarkedDown(itemName)){
             addMarkedDownPriceToTotal(itemToScan);
-        } else if(this.specialsMap.containsKey(itemName)){
-            
+        } else if(itemOnSpecial(itemName)){
+            if(currentAdjusterIsAdjusterForItem(itemName)){
+                this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
+                        .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
+            } else {
+                this.specialPriceAdjuster = getCorrectAdjusterForItem(itemName);
+                this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
+                        .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
+            }
         } else {
-            this.total = this.total.add(itemToScan.getPrice());
+            this.total = this.total.add(itemToScan.getPrice())
+                    .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
         }
+    }
+
+    private boolean currentAdjusterIsAdjusterForItem(String itemName) {
+        return this.specialPriceAdjuster.equals(getCorrectAdjusterForItem(itemName));
+    }
+
+    private boolean itemOnSpecial(String itemName) {
+        return this.specialsMap.containsKey(itemName);
+    }
+
+    private SpecialPriceAdjuster getCorrectAdjusterForItem(String itemName) {
+        return this.specialStrategy.provideSpecialPriceConcrete(this.specialsMap.get(itemName));
     }
 
     public BigDecimal getTotal(){
@@ -81,7 +101,7 @@ public class ApplicationGateway {
         BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdownMap.get(itemToScan.getName()));
         BigDecimal markedDownAmount = basePrice.multiply(markdownPercentAsBigDecimal);
         this.total = this.total.add(basePrice.subtract(markedDownAmount)).
-                setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+                setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
     }
 
     private boolean itemIsInInventory(String itemName){

@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class NullSpecialPriceAdjuster implements SpecialPriceAdjuster {
     @Override
-    public BigDecimal adjustPrice(String itemName, Map<String, List<SalesUnit>> itemsInCart) {
+    public BigDecimal adjustPrice(SalesUnit item) {
         return null;
     }
 

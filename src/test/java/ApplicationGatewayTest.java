@@ -97,5 +97,4 @@ public class ApplicationGatewayTest {
         assertThat(gateway.getTotal(), is(new BigDecimal("9.99")));
     }
 
-
 }

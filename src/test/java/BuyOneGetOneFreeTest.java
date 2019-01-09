@@ -19,18 +19,17 @@ public class BuyOneGetOneFreeTest {
         addItemToCartUpToSpecialLimit(item, cart);
         cart.addItem(item);
 
-        Map<String, List<SalesUnit>> itemsInCart = cart.getItemsInCart();
-        BigDecimal firstAppliedPrice = buyOneGetOneFree.adjustPrice(itemName, itemsInCart);
+        BigDecimal firstAppliedPrice = buyOneGetOneFree.adjustPrice(item);
         assertEquals(basePrice, firstAppliedPrice);
 
         BigDecimal specialPrice = new BigDecimal("0.00");
-        BigDecimal secondAppliedPrice = buyOneGetOneFree.adjustPrice(itemName, itemsInCart);
+        BigDecimal secondAppliedPrice = buyOneGetOneFree.adjustPrice(item);
         assertEquals(specialPrice, secondAppliedPrice);
 
-        buyOneGetOneFree.adjustPrice(itemName, itemsInCart);
-        buyOneGetOneFree.adjustPrice(itemName, itemsInCart);
+        buyOneGetOneFree.adjustPrice(item);
+        buyOneGetOneFree.adjustPrice(item);
 
-        BigDecimal fifthAppliedPrice = buyOneGetOneFree.adjustPrice(itemName, itemsInCart);
+        BigDecimal fifthAppliedPrice = buyOneGetOneFree.adjustPrice(item);
         assertEquals(basePrice, fifthAppliedPrice);
     }
 

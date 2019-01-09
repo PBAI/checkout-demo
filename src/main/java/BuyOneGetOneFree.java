@@ -12,9 +12,10 @@ public class BuyOneGetOneFree implements SpecialPriceAdjuster {
     }
 
     @Override
-    public BigDecimal adjustPrice(String itemName, Map<String, List<SalesUnit>> itemsInCart){
-        BigDecimal basePrice = itemsInCart.get(itemName).get(0).getPrice();
+    public BigDecimal adjustPrice(SalesUnit item){
+        BigDecimal basePrice = item.getPrice();
         Special special = Special.BUY_ONE_GET_ONE_FREE;
+        String itemName = item.getName();
 
         if(specialPricePreviouslyAppliedForItem(itemName)){
             if(numberOfTimesSpecialAppliedIsUnderLimit(itemName, special)){
@@ -41,10 +42,14 @@ public class BuyOneGetOneFree implements SpecialPriceAdjuster {
     }
 
     private BigDecimal getSpecialPrice(BigDecimal basePrice, String itemName) {
-        if(this.itemNamesAndTimesSpecialApplied.get(itemName) % 2 == 0){
+        if(numberOfTimesSpecialAppliedIsEven(itemName)){
             return new BigDecimal("0.00");
         }
         return basePrice;
+    }
+
+    private boolean numberOfTimesSpecialAppliedIsEven(String itemName) {
+        return this.itemNamesAndTimesSpecialApplied.get(itemName) % 2 == 0;
     }
 
     private boolean specialPricePreviouslyAppliedForItem(String itemName) {
