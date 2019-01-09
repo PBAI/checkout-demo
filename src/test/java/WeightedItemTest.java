@@ -25,8 +25,7 @@ public class WeightedItemTest {
         BigDecimal expectedWeightInPounds = new BigDecimal("3.00");
         WeightedItem apples = new WeightedItem("apples", expectedPricePerPound, expectedWeightInPounds);
 
-        int twoDecimalPlacePrecision = 2;
-        BigDecimal expectedPrice = new BigDecimal("7.50").setScale(twoDecimalPlacePrecision);
+        BigDecimal expectedPrice = new BigDecimal("7.50");
         assertThat(apples.getPrice(), is(expectedPrice));
     }
 

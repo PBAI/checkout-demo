@@ -19,8 +19,8 @@ public class WeightedItem implements SalesUnit {
 
     @Override
     public BigDecimal getPrice(){
-        int twoDecimalPlacesPrecision = 2;
-        return this.pricePerPound.multiply(this.weightInPounds).setScale(twoDecimalPlacesPrecision);
+        return this.pricePerPound.multiply(this.weightInPounds).
+                setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue());
     }
 
     public BigDecimal getPricePerPound(){

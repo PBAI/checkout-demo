@@ -11,6 +11,8 @@ public class ApplicationGateway {
     private BigDecimal total;
     private Map<String, String> markdownMap;
     private Map<String, Special> specialsMap;
+    private SpecialStrategy specialStrategy;
+    private SpecialPriceAdjuster specialPriceAdjuster;
 
     public ApplicationGateway() {
         this.inventory = new ArrayList<>();
@@ -18,6 +20,8 @@ public class ApplicationGateway {
         this.total = new BigDecimal("0.00");
         this.markdownMap = new HashMap<>();
         this.specialsMap = new HashMap<>();
+        this.specialStrategy = new SpecialStrategy();
+        this.specialPriceAdjuster = new NullSpecialPriceAdjuster();
     }
 
     public void addItemNamesToInventory(String...itemNames){
@@ -40,23 +44,19 @@ public class ApplicationGateway {
     }
 
     public void addItemToCart(SalesUnit itemToAdd){
-        for(int i = 0; i < inventory.size(); i++){
-            if(itemToScanIsInCart(itemToAdd, inventory.get(i))){
-                this.cart.addItem(itemToAdd);
-            }
+        if(itemIsInInventory(itemToAdd.getName())){
+            this.cart.addItem(itemToAdd);
         }
     }
 
     public void scanItemToTotal(SalesUnit itemToScan){
-        Map<String, List<SalesUnit>> itemsInCart = this.cart.getItemsInCart();
-        for(String itemName : itemsInCart.keySet()){
-            if(itemToScanIsInCart(itemToScan, itemName)){
-                if(itemIsMarkedDown(itemName)){
-                    addMarkedDownPriceToTotal(itemToScan);
-                } else {
-                    this.total = this.total.add(itemToScan.getPrice());
-                }
-            }
+        String itemName = itemToScan.getName();
+        if(itemIsMarkedDown(itemName)){
+            addMarkedDownPriceToTotal(itemToScan);
+        } else if(this.specialsMap.containsKey(itemName)){
+            
+        } else {
+            this.total = this.total.add(itemToScan.getPrice());
         }
     }
 
@@ -64,7 +64,7 @@ public class ApplicationGateway {
         return this.total;
     }
 
-    public Map<String, List<SalesUnit>> getDistinctItemsInCart(){
+    public Map<String, List<SalesUnit>> getItemsInCart(){
         return this.cart.getItemsInCart();
     }
 
@@ -76,16 +76,16 @@ public class ApplicationGateway {
         return this.markdownMap.containsKey(itemName);
     }
 
-    private boolean itemToScanIsInCart(SalesUnit itemToScan, String itemInCartName) {
-        return itemInCartName.equals(itemToScan.getName());
-    }
-
     private void addMarkedDownPriceToTotal(SalesUnit itemToScan) {
         BigDecimal basePrice = itemToScan.getPrice();
         BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdownMap.get(itemToScan.getName()));
         BigDecimal markedDownAmount = basePrice.multiply(markdownPercentAsBigDecimal);
-        int twoDecimalPlacePrecision = 2;
-        this.total = this.total.add(basePrice.subtract(markedDownAmount)).setScale(twoDecimalPlacePrecision);
+        this.total = this.total.add(basePrice.subtract(markedDownAmount)).
+                setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+    }
+
+    private boolean itemIsInInventory(String itemName){
+        return this.inventory.contains(itemName);
     }
 
 }
