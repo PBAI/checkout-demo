@@ -32,15 +32,14 @@ public class ApplicationGateway {
 
     public void markdownItemByPercentage(String itemName, String markdownPercentage){
         if((this.inventory.contains(itemName)) &&
-                (!itemIsMarkedDown(itemName))){
+                (!itemIsMarkedDown(itemName)) &&
+                (!itemOnSpecial(itemName))){
             this.markdownMap.put(itemName, markdownPercentage);
         }
     }
 
     public void putItemOnSpecial(String itemName, Special specialForItem){
-        if(!itemIsMarkedDown(itemName)){
             this.specialsMap.put(itemName, specialForItem);
-        }
     }
 
     public void addItemToCart(SalesUnit itemToAdd){
@@ -54,30 +53,15 @@ public class ApplicationGateway {
         if(itemIsMarkedDown(itemName)){
             addMarkedDownPriceToTotal(itemToScan);
         } else if(itemOnSpecial(itemName)){
-            if(currentAdjusterIsAdjusterForItem(itemName)){
-                this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
-                        .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
-            } else {
-                this.specialPriceAdjuster = getCorrectAdjusterForItem(itemName);
-                this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
-                        .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
-            }
+            addSpecialPriceToTotal(itemToScan);
         } else {
-            this.total = this.total.add(itemToScan.getPrice())
-                    .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
+            addBasePriceToTotal(itemToScan);
         }
     }
 
-    private boolean currentAdjusterIsAdjusterForItem(String itemName) {
-        return this.specialPriceAdjuster.equals(getCorrectAdjusterForItem(itemName));
-    }
-
-    private boolean itemOnSpecial(String itemName) {
-        return this.specialsMap.containsKey(itemName);
-    }
-
-    private SpecialPriceAdjuster getCorrectAdjusterForItem(String itemName) {
-        return this.specialStrategy.provideSpecialPriceConcrete(this.specialsMap.get(itemName));
+    private void addBasePriceToTotal(SalesUnit itemToScan) {
+        this.total = this.total.add(itemToScan.getPrice())
+                .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
     }
 
     public BigDecimal getTotal(){
@@ -92,6 +76,34 @@ public class ApplicationGateway {
         return this.inventory;
     }
 
+    public Map<String, String> getMarkdownMap(){
+        return this.markdownMap;
+    }
+
+    private void addSpecialPriceToTotal(SalesUnit itemToScan) {
+        String itemName = itemToScan.getName();
+        if(currentAdjusterIsAdjusterForItem(itemName)){
+            this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
+                    .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+        } else {
+            this.specialPriceAdjuster = getCorrectAdjusterForItem(itemName);
+            this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
+                    .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+        }
+    }
+
+    private boolean currentAdjusterIsAdjusterForItem(String itemName) {
+        return this.specialPriceAdjuster.getClass().equals(getCorrectAdjusterForItem(itemName).getClass());
+    }
+
+    private boolean itemOnSpecial(String itemName) {
+        return this.specialsMap.containsKey(itemName);
+    }
+
+    private SpecialPriceAdjuster getCorrectAdjusterForItem(String itemName) {
+        return this.specialStrategy.provideSpecialPriceConcrete(this.specialsMap.get(itemName));
+    }
+
     private boolean itemIsMarkedDown(String itemName) {
         return this.markdownMap.containsKey(itemName);
     }
@@ -101,7 +113,7 @@ public class ApplicationGateway {
         BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdownMap.get(itemToScan.getName()));
         BigDecimal markedDownAmount = basePrice.multiply(markdownPercentAsBigDecimal);
         this.total = this.total.add(basePrice.subtract(markedDownAmount)).
-                setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_DOWN);
+                setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
     }
 
     private boolean itemIsInInventory(String itemName){

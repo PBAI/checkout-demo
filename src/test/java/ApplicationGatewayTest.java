@@ -1,3 +1,4 @@
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -8,6 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ApplicationGatewayTest {
 
@@ -41,20 +43,58 @@ public class ApplicationGatewayTest {
     }
 
     @Test
-    public void shouldMarkdownItemByPercentage(){
+    public void shouldMarkdownItemOnlyIfItemWithinInventory(){
         ApplicationGateway gateway = new ApplicationGateway();
-        BigDecimal basePrice = new BigDecimal("52.00");
-        String itemName = "something";
-        Item markedDownItem = new Item(itemName, basePrice);
+        BigDecimal basePrice = new BigDecimal("20.00");
+        Item notInStock = new Item("some item", basePrice);
+
+        gateway.markdownItemByPercentage(notInStock.getName(), Percentage.FIFTY_PERCENT.getPercentageValueString());
+
+        assertTrue(gateway.getMarkdownMap().isEmpty());
+
+        Item inStock = new Item("whatever", new BigDecimal("15.00"));
+        String inStockName = inStock.getName();
+        gateway.addItemNamesToInventory(inStockName);
+        gateway.markdownItemByPercentage(inStockName, Percentage.FIFTY_PERCENT.getPercentageValueString());
+
+        assertTrue(gateway.getMarkdownMap().keySet().contains(inStockName));
+    }
+
+    @Test
+    public void shouldMarkdownItemOnlyIfNotAlreadyOnSpecial(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        String itemName = "goodie";
+        Item item = new Item(itemName, new BigDecimal("5.00"));
 
         gateway.addItemNamesToInventory(itemName);
-        String markdownPercentage = Percentage.TWENTY_FIVE_PERCENT.getPercentageValueString();
-        gateway.markdownItemByPercentage(itemName, markdownPercentage);
-        gateway.addItemToCart(markedDownItem);
-        gateway.scanItemToTotal(markedDownItem);
+        gateway.putItemOnSpecial(itemName, Special.BUY_ONE_GET_ONE_FREE);
+        gateway.markdownItemByPercentage(itemName, Percentage.TEN_PERCENT.getPercentageValueString());
 
-        BigDecimal markedDownPrice = new BigDecimal("39.00");
-        assertEquals(markedDownPrice, gateway.getTotal());
+        assertTrue(gateway.getMarkdownMap().isEmpty());
+
+        String secondItemName = "toy";
+        Item anotherItem = new Item(secondItemName, new BigDecimal("14.00"));
+        gateway.addItemNamesToInventory(secondItemName);
+        gateway.markdownItemByPercentage(secondItemName, Percentage.TWENTY_FIVE_PERCENT.getPercentageValueString());
+
+        assertTrue(gateway.getMarkdownMap().keySet().contains(secondItemName));
+    }
+
+    @Test
+    public void shouldMarkdownItemByPercentage_ItemCanOnlyBeMarkedDownOnce(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        BigDecimal basePrice = new BigDecimal("52.00");
+        String itemName = "alreadyMarkedDown";
+        Item alreadyMarkedDownItem = new Item(itemName, basePrice);
+
+        gateway.addItemNamesToInventory(itemName);
+        gateway.markdownItemByPercentage(itemName, Percentage.TEN_PERCENT.getPercentageValueString());
+        gateway.markdownItemByPercentage(itemName, Percentage.TWENTY_FIVE_PERCENT.getPercentageValueString());
+        gateway.addItemToCart(alreadyMarkedDownItem);
+        gateway.scanItemToTotal(alreadyMarkedDownItem);
+
+        BigDecimal expectedPriceFromFirstMarkDown = new BigDecimal("46.80");
+        assertEquals(expectedPriceFromFirstMarkDown, gateway.getTotal());
     }
 
     @Test
@@ -79,7 +119,7 @@ public class ApplicationGatewayTest {
     }
 
     @Test
-    public void shouldPutInventoriedItemOnSpecialIfNotMarkdownOrAlreadyOnSpecial(){
+    public void shouldPutItemOnSpecial(){
         ApplicationGateway gateway = new ApplicationGateway();
         BigDecimal basePrice = new BigDecimal("9.99");
         Item thing = new Item("thing", basePrice);
