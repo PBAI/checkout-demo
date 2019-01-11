@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Map;
 
 public class NullSpecialPriceAdjuster implements SpecialPriceAdjuster {
+
     @Override
     public BigDecimal adjustPrice(SalesUnit item) {
         return null;
