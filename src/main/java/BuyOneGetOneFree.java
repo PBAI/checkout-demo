@@ -29,10 +29,6 @@ public class BuyOneGetOneFree implements SpecialPriceAdjuster {
         return getSpecialPrice(basePrice, itemName);
     }
 
-    public Map<String, Integer> getItemNamesAndTimesSpecialApplied(){
-        return this.itemNamesAndTimesSpecialApplied;
-    }
-
     private Integer increaseNumberOfTimesSpecialAppliedByOne(String itemName) {
         return this.itemNamesAndTimesSpecialApplied.put(itemName, this.itemNamesAndTimesSpecialApplied.get(itemName) + 1 );
     }

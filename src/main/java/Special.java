@@ -1,6 +1,7 @@
 public enum Special {
 
-    BUY_ONE_GET_ONE_FREE(4);
+    BUY_ONE_GET_ONE_FREE(4),
+    THREE_FOR_FIVE(6);
 
     private int itemLimit;
 
