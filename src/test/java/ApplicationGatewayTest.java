@@ -48,14 +48,14 @@ public class ApplicationGatewayTest {
         BigDecimal basePrice = new BigDecimal("20.00");
         Item notInStock = new Item("some item", basePrice);
 
-        gateway.markdownItemByPercentage(notInStock.getName(), Percentage.FIFTY_PERCENT.getPercentageValueString());
+        gateway.markdownItemByPercentage(notInStock.getName(), Percentage.FIFTY_PERCENT);
 
         assertTrue(gateway.getMarkdownMap().isEmpty());
 
         Item inStock = new Item("whatever", new BigDecimal("15.00"));
         String inStockName = inStock.getName();
         gateway.addItemNamesToInventory(inStockName);
-        gateway.markdownItemByPercentage(inStockName, Percentage.FIFTY_PERCENT.getPercentageValueString());
+        gateway.markdownItemByPercentage(inStockName, Percentage.FIFTY_PERCENT);
 
         assertTrue(gateway.getMarkdownMap().keySet().contains(inStockName));
     }
@@ -68,14 +68,14 @@ public class ApplicationGatewayTest {
 
         gateway.addItemNamesToInventory(itemName);
         gateway.putItemOnSpecial(itemName, Special.BUY_ONE_GET_ONE_FREE);
-        gateway.markdownItemByPercentage(itemName, Percentage.TEN_PERCENT.getPercentageValueString());
+        gateway.markdownItemByPercentage(itemName, Percentage.TEN_PERCENT);
 
         assertTrue(gateway.getMarkdownMap().isEmpty());
 
         String secondItemName = "toy";
         Item anotherItem = new Item(secondItemName, new BigDecimal("14.00"));
         gateway.addItemNamesToInventory(secondItemName);
-        gateway.markdownItemByPercentage(secondItemName, Percentage.TWENTY_FIVE_PERCENT.getPercentageValueString());
+        gateway.markdownItemByPercentage(secondItemName, Percentage.TWENTY_FIVE_PERCENT);
 
         assertTrue(gateway.getMarkdownMap().keySet().contains(secondItemName));
     }
@@ -88,8 +88,8 @@ public class ApplicationGatewayTest {
         Item alreadyMarkedDownItem = new Item(itemName, basePrice);
 
         gateway.addItemNamesToInventory(itemName);
-        gateway.markdownItemByPercentage(itemName, Percentage.TEN_PERCENT.getPercentageValueString());
-        gateway.markdownItemByPercentage(itemName, Percentage.TWENTY_FIVE_PERCENT.getPercentageValueString());
+        gateway.markdownItemByPercentage(itemName, Percentage.TEN_PERCENT);
+        gateway.markdownItemByPercentage(itemName, Percentage.TWENTY_FIVE_PERCENT);
         gateway.addItemToCart(alreadyMarkedDownItem);
         gateway.scanItemToTotal(alreadyMarkedDownItem);
 
@@ -110,7 +110,7 @@ public class ApplicationGatewayTest {
         gateway.addItemNamesToInventory(item1Name, item2Name);
         gateway.addItemToCart(item1);
         gateway.addItemToCart(item2);
-        gateway.markdownItemByPercentage(item2Name, Percentage.FIFTY_PERCENT.getPercentageValueString());
+        gateway.markdownItemByPercentage(item2Name, Percentage.FIFTY_PERCENT);
         gateway.scanItemToTotal(item1);
         gateway.scanItemToTotal(item2);
 

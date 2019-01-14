@@ -8,7 +8,8 @@ import org.junit.runners.Suite;
         CartTest.class,
         ItemTest.class,
         WeightedItemTest.class,
-        BuyOneGetOneFreeTest.class
+        BuyOneGetOneFreeTest.class,
+        ThreeForFiveTest.class
 })
 
 public class TestSuite {

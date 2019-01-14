@@ -30,11 +30,11 @@ public class ApplicationGateway {
         }
     }
 
-    public void markdownItemByPercentage(String itemName, String markdownPercentage){
+    public void markdownItemByPercentage(String itemName, Percentage markdownPercentage){
         if((this.inventory.contains(itemName)) &&
                 (!itemIsMarkedDown(itemName)) &&
                 (!itemOnSpecial(itemName))){
-            this.markdownMap.put(itemName, markdownPercentage);
+            this.markdownMap.put(itemName, markdownPercentage.getPercentageValueString());
         }
     }
 
