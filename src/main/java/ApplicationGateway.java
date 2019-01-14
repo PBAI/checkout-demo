@@ -70,6 +70,26 @@ public class ApplicationGateway {
         }
     }
 
+    public BigDecimal getTotal(){
+        return this.total;
+    }
+
+    public Map<String, List<SalesUnit>> getItemsInCart(){
+        return this.cart.getItemsInCart();
+    }
+
+    public List<String> getInventory(){
+        return this.inventory;
+    }
+
+    public Map<String, String> getMarkdownMap(){
+        return this.markdownMap;
+    }
+
+    public Map<String, Special> getSpecialsMap(){
+        return this.specialsMap;
+    }
+
     private void removeLastScannedItemPrice(String itemName, List<String> pricesScannedForItem) {
         pricesScannedForItem.remove(pricesScannedForItem.size() - 1);
         this.itemsAndPricesScanned.replace(itemName, pricesScannedForItem);
@@ -86,22 +106,6 @@ public class ApplicationGateway {
         this.total = this.total.add(priceToAdd)
                 .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
         addToItemsAndPricesScanned(itemToScan.getName(), priceToAdd);
-    }
-
-    public BigDecimal getTotal(){
-        return this.total;
-    }
-
-    public Map<String, List<SalesUnit>> getItemsInCart(){
-        return this.cart.getItemsInCart();
-    }
-
-    public List<String> getInventory(){
-        return this.inventory;
-    }
-
-    public Map<String, String> getMarkdownMap(){
-        return this.markdownMap;
     }
 
     private void addSpecialPriceToTotal(SalesUnit itemToScan) {
