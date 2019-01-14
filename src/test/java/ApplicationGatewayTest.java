@@ -1,4 +1,3 @@
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -135,6 +134,22 @@ public class ApplicationGatewayTest {
         }
 
         assertThat(gateway.getTotal(), is(new BigDecimal("9.99")));
+    }
+
+    @Test
+    public void shouldRemoveScannedItem(){
+        ApplicationGateway gateway = new ApplicationGateway();
+        BigDecimal basePrice = new BigDecimal("10.00");
+        SalesUnit thingOne = new Item("THING ONE", basePrice);
+        gateway.addItemNamesToInventory(thingOne.getName());
+        gateway.addItemToCart(thingOne);
+        gateway.scanItemToTotal(thingOne);
+
+        assertThat(gateway.getTotal(), is(basePrice));
+
+        gateway.removeOneItemFromTotal(thingOne);
+
+        assertThat(gateway.getTotal(), is(new BigDecimal("0.00")));
     }
 
 }

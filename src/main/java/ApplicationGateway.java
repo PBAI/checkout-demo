@@ -13,6 +13,7 @@ public class ApplicationGateway {
     private Map<String, Special> specialsMap;
     private SpecialStrategy specialStrategy;
     private SpecialPriceAdjuster specialPriceAdjuster;
+    private Map<String, List<String>> itemsAndPricesScanned;
 
     public ApplicationGateway() {
         this.inventory = new ArrayList<>();
@@ -22,6 +23,7 @@ public class ApplicationGateway {
         this.specialsMap = new HashMap<>();
         this.specialStrategy = new SpecialStrategy();
         this.specialPriceAdjuster = new NullSpecialPriceAdjuster();
+        this.itemsAndPricesScanned = new HashMap<>();
     }
 
     public void addItemNamesToInventory(String...itemNames){
@@ -59,9 +61,31 @@ public class ApplicationGateway {
         }
     }
 
-    private void addBasePriceToTotal(SalesUnit itemToScan) {
-        this.total = this.total.add(itemToScan.getPrice())
+    public void removeOneItemFromTotal(SalesUnit item){
+        String itemName = item.getName();
+        if(this.itemsAndPricesScanned.containsKey(itemName)){
+            List<String> pricesScannedForItem = this.itemsAndPricesScanned.get(itemName);
+            subtractPriceOfScannedItemFromTotal(pricesScannedForItem);
+            removeLastScannedItemPrice(itemName, pricesScannedForItem);
+        }
+    }
+
+    private void removeLastScannedItemPrice(String itemName, List<String> pricesScannedForItem) {
+        pricesScannedForItem.remove(pricesScannedForItem.size() - 1);
+        this.itemsAndPricesScanned.replace(itemName, pricesScannedForItem);
+    }
+
+    private void subtractPriceOfScannedItemFromTotal(List<String> pricesScannedForItem) {
+        this.total = this.total.subtract(
+                new BigDecimal(pricesScannedForItem.get(pricesScannedForItem.size() - 1)))
                 .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+    }
+
+    private void addBasePriceToTotal(SalesUnit itemToScan) {
+        BigDecimal priceToAdd = itemToScan.getPrice();
+        this.total = this.total.add(priceToAdd)
+                .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+        addToItemsAndPricesScanned(itemToScan.getName(), priceToAdd);
     }
 
     public BigDecimal getTotal(){
@@ -82,13 +106,18 @@ public class ApplicationGateway {
 
     private void addSpecialPriceToTotal(SalesUnit itemToScan) {
         String itemName = itemToScan.getName();
+
         if(currentAdjusterIsAdjusterForItem(itemName)){
-            this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
+            BigDecimal adjustedPrice = this.specialPriceAdjuster.adjustPrice(itemToScan);
+            this.total = this.total.add(adjustedPrice)
                     .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+            addToItemsAndPricesScanned(itemName, adjustedPrice);
         } else {
             this.specialPriceAdjuster = getCorrectAdjusterForItem(itemName);
-            this.total = this.total.add(this.specialPriceAdjuster.adjustPrice(itemToScan))
+            BigDecimal latestAdjusterPrice = this.specialPriceAdjuster.adjustPrice(itemToScan);
+            this.total = this.total.add(latestAdjusterPrice)
                     .setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+            addToItemsAndPricesScanned(itemName, latestAdjusterPrice);
         }
     }
 
@@ -110,10 +139,23 @@ public class ApplicationGateway {
 
     private void addMarkedDownPriceToTotal(SalesUnit itemToScan) {
         BigDecimal basePrice = itemToScan.getPrice();
-        BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdownMap.get(itemToScan.getName()));
+        String itemName = itemToScan.getName();
+        BigDecimal markdownPercentAsBigDecimal = new BigDecimal(this.markdownMap.get(itemName));
         BigDecimal markedDownAmount = basePrice.multiply(markdownPercentAsBigDecimal);
-        this.total = this.total.add(basePrice.subtract(markedDownAmount)).
+        BigDecimal priceToAdd = basePrice.subtract(markedDownAmount);
+        this.total = this.total.add(priceToAdd).
                 setScale(Precision.TWO_DECIMAL_PLACES.getIntegerValue(), BigDecimal.ROUND_UP);
+        addToItemsAndPricesScanned(itemName, priceToAdd);
+    }
+
+    private void addToItemsAndPricesScanned(String itemName, BigDecimal priceToAdd) {
+        if(this.itemsAndPricesScanned.containsKey(itemName)){
+            this.itemsAndPricesScanned.get(itemName).add(priceToAdd.toString());
+        } else {
+            ArrayList<String> pricesScanned = new ArrayList<>();
+            pricesScanned.add(priceToAdd.toString());
+            this.itemsAndPricesScanned.put(itemName, pricesScanned);
+        }
     }
 
     private boolean itemIsInInventory(String itemName){
